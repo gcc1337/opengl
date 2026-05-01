@@ -15,6 +15,7 @@ class Shape
 public:
 	Shape(std::vector<vec3> vertices, vec3 shapeColor);
 	void draw();
+	void changeVertex(int vertex_index, vec3 new_value, vec3 new_color);
 private:
 	unsigned int vaoID_{};
 	unsigned int vboID_{};
