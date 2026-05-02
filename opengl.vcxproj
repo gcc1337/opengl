@@ -20,7 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.fs" />
+    <None Include="fragmentShaderCircle.fs" />
     <None Include="vertexShader.vs" />
+    <None Include="vertexShaderCircle.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

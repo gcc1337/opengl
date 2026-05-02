@@ -16,9 +16,6 @@ namespace utils
 		MachineData(GLFWwindow* window);
 
 		std::vector<Shape> shapes_{};
-		std::vector<Shader> shaders_{};
-		std::vector<vec3> vertices_{};
-		std::vector<vec3> colors_{};
 		vec3 clear_color_{};
 
 		GLFWwindow* window_{};

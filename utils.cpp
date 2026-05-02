@@ -80,20 +80,38 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 
 utils::MachineData::MachineData(GLFWwindow* window)
-    :vertices_{}, shaders_{}, shapes_{}, colors_{}, window_{window}, clear_color_{ 0.2f, 0.3f, 0.3f }
+    :shapes_{}, clear_color_{ 0.2f, 0.3f, 0.3f }, window_{ window }
 {
     //shader creation
-    shaders_.push_back(Shader{ "vertexShader.vs", "fragmentShader.fs" });
-
+    float tx{ -0.2f };
+    float ty{ -0.2f };
     //simple square
-    vertices_ = { {-0.1f, -0.4f, 0.0f},
-                  {-0.6f,  0.4f, 0.0f},
-                  { 0.4f, -0.4f, 0.0f},
-                  { 0.4f,  0.4f, 0.0f} };
+    std::vector<vec3> vertices_ = {{-0.3f + 0.5f  , -0.3f + 0.5f, 0.0f},
+                                  {-0.3f + 0.5f ,  0.3f + 0.5f, 0.0f},
+                                  { 0.3f + 0.5f , -0.3f + 0.5f, 0.0f},
+                                  { 0.3f + 0.5f ,  0.3f + 0.5f, 0.0f} };
 
-    colors_.push_back({ 0.5f, 0.5f, 0.0f });
+    std::vector<vec3> verticesTriangle_ = { {-0.3f + tx  , -0.3f + ty, 0.0f},
+                              {-0.3f + tx ,  0.3f + ty, 0.0f},
+                              { 0.3f + tx ,  0.3f + ty, 0.0f} };
 
-    shapes_.push_back({ vertices_, colors_[0]});
+
+    std::vector<vec3> vertices_pyramid{{-0.8f , -0.8f, 0.0f},
+                              {-0.8f ,  -0.6f, 0.0f},
+                              {-0.6f ,  -0.8f, 0.0f},
+                              {-0.6f ,  -0.6f, 0.0f},
+                              {-0.4f ,  -0.7f, 0.0f} };
+
+
+    shapes_.push_back({ vertices_, { 1.0f, 0.5f, 0.0f } });
+    shapes_.push_back({ verticesTriangle_, { 0.5f, 1.0f, 0.0f } });
+    shapes_.push_back({ vertices_pyramid, { 0.5f, 0.5f, 1.0f } });
+
+
+    //circle -> doesnt matter what are the initial values of a circle
+    //it only accepts its center position and radius
+    //will always be centralized, to change position and radius, use uniform query
+    shapes_.push_back({ {-0.700f, 0.645f, 0.0f}, 0.210f, { 0.5f, 1.0f, 1.0f } });
 
     glClearColor(clear_color_.x, clear_color_.y, clear_color_.z, 1.0f);
 }
@@ -119,7 +137,8 @@ void utils::handle_input(MachineData& m)
     static bool show_window{ false };
     static float aux_width = 0.5f;
     static float aux_height = 0.5f;
-    static vec3 aux_rgb = { m.colors_[0] };
+    static vec3 aux_rgb = {};
+
 
     //gui creation
     if (show_window) 
@@ -129,6 +148,7 @@ void utils::handle_input(MachineData& m)
         ImGui::DragFloat("Altura", &aux_height, 0.005f, 0.0f, 1.0f, "%.3f");
         ImGui::ColorEdit3("Cor retangulo", &aux_rgb.x);
         ImGui::ColorEdit3("Cor background", &m.clear_color_.x);
+
         ImGui::End();
     }
 
@@ -136,10 +156,11 @@ void utils::handle_input(MachineData& m)
         show_window = !show_window;
 
     //change vector position and color
-    m.shapes_[0].changeVertex(0, { -aux_width, -aux_height, 0 }, aux_rgb);
-    m.shapes_[0].changeVertex(1, { -aux_width, aux_height, 0 }, aux_rgb);
-    m.shapes_[0].changeVertex(2, { aux_width, -aux_height, 0 }, aux_rgb);
-    m.shapes_[0].changeVertex(3, { aux_width, aux_height, 0 }, aux_rgb);
+    //m.shapes_[0].changeVertex(0, { -aux_width, -aux_height, 0 }, aux_rgb);
+    //m.shapes_[0].changeVertex(1, { -aux_width, aux_height, 0 }, aux_rgb);
+    //m.shapes_[0].changeVertex(2, { aux_width, -aux_height, 0 }, aux_rgb);
+    //m.shapes_[0].changeVertex(3, { aux_width, aux_height, 0 }, aux_rgb);
+
 
     // input
     // -----
@@ -166,8 +187,8 @@ void processInput(GLFWwindow* window, vec3& rbg, vec3& rgb_b)
     static bool pressed{ false };
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !pressed)
     {
-        rbg = vec3{ randomFloat(),randomFloat(),randomFloat() };
-        rgb_b = vec3{ randomFloat(),randomFloat(),randomFloat() };
+        //rbg = vec3{ randomFloat(),randomFloat(),randomFloat() };
+        //rgb_b = vec3{ randomFloat(),randomFloat(),randomFloat() };
         pressed = true ;
     }
 
@@ -187,11 +208,14 @@ void utils::render(MachineData& machine)
 {
     // render   
     // ------
+
     glClearColor(machine.clear_color_.x, machine.clear_color_.y, machine.clear_color_.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    machine.shaders_[0].use();
     machine.shapes_[0].draw();
+    machine.shapes_[1].draw();
+    machine.shapes_[2].draw();
+    machine.shapes_[3].draw();
     
     //imgui endings
     // Rendering

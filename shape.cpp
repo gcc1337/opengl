@@ -2,7 +2,8 @@
 #include <iostream>
 
 Shape::Shape(std::vector<vec3> vertices, vec3 color)
-	:vertices_{vertices}
+	:vertices_{vertices},
+	shader_{ "vertexShader.vs", "fragmentShader.fs" }
 {
 	//ineficient implementation to create vertices and colors intercalation
 	//operations and memory, this fuction uses a aux vector with length of vertices.size * colors
@@ -39,8 +40,36 @@ Shape::Shape(std::vector<vec3> vertices, vec3 color)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+//this constructor should be converted to its unique class, circle
+Shape::Shape(vec3 circ_pos, float radius, vec3 shapeColor) 
+	:Shape({ {-1.0f, -1.0f, 0.0f},
+				  {-1.0f,  1.0f, 0.0f},
+				  { 1.0f, -1.0f, 0.0f},
+				  { 1.0f,  1.0f, 0.0f} }, shapeColor)
+{
+	//this is bad design, previous shader creation is desnecessary
+	shader_ = Shader{ "vertexShaderCircle.vs", "fragmentShaderCircle.fs" };
+	shader_.use();
+	shader_.setFloat("circ_center_x", circ_pos.x);
+	shader_.setFloat("circ_center_y", circ_pos.y);
+	shader_.setFloat("circ_radius", radius);
+
+}
+
+void Shape::changeRadius(float radius)
+{
+	shader_.setFloat("circ_radius", radius);
+}
+
+void Shape::changePos(vec3 pos)
+{
+	shader_.setFloat("circ_center_x", pos.x);
+	shader_.setFloat("circ_center_y", pos.y);
+}
+
 void Shape::draw()
 {
+	shader_.use(); 
 	glBindVertexArray(vaoID_);
 	//vertices has to form a "zig-zag" pattern
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices_.size());

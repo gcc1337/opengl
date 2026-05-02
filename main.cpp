@@ -14,7 +14,7 @@
 
 int main()
 {
-    auto window = utils::configure("Gustavo Carvalho cunha", 1280, 720);
+    auto window = utils::configure("Gustavo Carvalho cunha", 720, 720);
     if (window == nullptr) {
         std::cout << "Window creation failed!\n";
         return -1;

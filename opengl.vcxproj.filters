@@ -21,6 +21,12 @@
     <None Include="fragmentShader.fs">
       <Filter>Arquivos de Recurso</Filter>
     </None>
+    <None Include="fragmentShaderCircle.fs">
+      <Filter>Arquivos de Recurso</Filter>
+    </None>
+    <None Include="vertexShaderCircle.vs">
+      <Filter>Arquivos de Recurso</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
