@@ -98,9 +98,9 @@ void Shape::changeSize(float new_width, float new_height)
 }
 
 void Shape::changePosTriangle(vec3 pos) {
-	changeVertex(0, { vertices_[0].x + pos.x, vertices_[0].y + pos.y, 0 }, color_);
-	changeVertex(1, { vertices_[1].x + pos.x, vertices_[1].y + pos.y, 0 }, color_);
-	changeVertex(2, { vertices_[2].x + pos.x, vertices_[2].y + pos.y, 0 }, color_);
+	changeVertex(0, { vertices_[0].x + (posMod.x = pos.x), vertices_[0].y + (posMod.y = pos.y), 0 }, color_);
+	changeVertex(1, { vertices_[1].x + (posMod.x = pos.x), vertices_[1].y + (posMod.y = pos.y), 0 }, color_);
+	changeVertex(2, { vertices_[2].x + (posMod.x = pos.x), vertices_[2].y + (posMod.y = pos.y), 0 }, color_);
 }
 
 void Shape::changeColor(vec3 color)
@@ -109,4 +109,23 @@ void Shape::changeColor(vec3 color)
 		changeVertex(i, vertices_[i], color);
 
 	color_ = color;
+}
+
+Shape::~Shape()
+{
+
+}
+
+std::vector<vec3> Shape::getVertices()
+{
+	auto ret{ vertices_ };
+
+	for (auto& r : ret)
+	{
+		r.x += posMod.x;
+		r.y += posMod.y;
+		r.z += posMod.z;
+	}
+
+	return ret;
 }

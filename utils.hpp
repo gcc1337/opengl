@@ -6,6 +6,7 @@
 
 #include "shape.hpp"
 #include "shader.hpp"
+#include "line.hpp"
 
 namespace utils
 {
@@ -16,6 +17,7 @@ namespace utils
 		MachineData(GLFWwindow* window);
 
 		std::vector<Shape> shapes_{};
+		std::vector<Line> lines_{};
 		vec3 clear_color_{};
 
 		GLFWwindow* window_{};

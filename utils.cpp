@@ -10,6 +10,9 @@
 #include <iostream>
 #include <random>
 
+#include "line.hpp"
+#include <format>
+
 
 /******          BEGIN CONFIGURATION SETTINGS          ******/
 
@@ -90,7 +93,15 @@ utils::MachineData::MachineData(GLFWwindow* window)
     for (int i = 0; i < 5; i++)
     {
         shapes_.push_back({ verticesTriangle_, { i / 10.0f, i / 10.0f, i / 10.0f } });
+        
     }
+
+    std::vector<vec3> points1{ {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} };
+    lines_.push_back({ points1, { 1.0f, 1.0f, 1.0f } });
+
+    std::vector<vec3> points2{ {0.0f, 1.0f, 0.0f}, {0.0f, -1.0f, 0.0f} };
+    lines_.push_back({ points2, { 1.0f, 1.0f, 1.0f } });
+
 }
 
 
@@ -114,7 +125,7 @@ void utils::handle_input(MachineData& m)
     static bool show_window{ false };
     static std::vector<float> aux_width(5, 0.1f);
     static std::vector<float> aux_height(5, 0.190f);
-    static std::vector<float> aux_x{ -0.715f, -0.035f, 0.615f, 0.615f, -0.715f };
+    static std::vector<float> aux_x{ -0.715f, -0.305f, 0.615f, 0.615f, -0.715f };
     static std::vector<float> aux_y{ 0.635f, 0.635f, 0.635f, -0.550f, -0.550 };
     static std::vector<vec3> aux_rgb(5);
 
@@ -137,17 +148,42 @@ void utils::handle_input(MachineData& m)
         ImGui::ColorEdit3("Cor background", &m.clear_color_.x);
 
         ImGui::End();
-    }
+    } 
+
+    std::vector<ImVec2> textPos{
+        {0,300},
+        {180,300},
+        {500,300},
+        {500,600},
+        { 0,600 },
+    };
+
+
 
     if (ImGui::IsKeyPressed(ImGuiKey_Q))
         show_window = !show_window;
 
     for (int i = 0; i < 5; i++)
     {
-        m.shapes_[i].changeSize(aux_width[i], aux_height[i]);
         m.shapes_[i].changeColor(aux_rgb[i]);
+        m.shapes_[i].changeSize(aux_width[i], aux_height[i]);
         m.shapes_[i].changePosTriangle({ aux_x[i], aux_y[i], 0.0f });
     }
+
+    for (int i = 0; i < 5; i++)
+    {
+        auto v{ m.shapes_[i].getVertices() };
+        ImGui::GetBackgroundDrawList()->AddText(
+            textPos[i],
+            IM_COL32(255, 255, 255, 255),
+            std::format("Retangulo {}:\n "
+                "V[{}]: {}, {}\n"
+                "V[{}]: {}, {}\n"
+                "V[{}]: {}, {}\n", i, 1, v[0].x, v[0].y, 2, v[1].x, v[1].y, 3, v[2].x, v[2].y
+                , i, aux_x[i], aux_y[i]).data()
+        );
+    }
+
 
     // input
     // -----
@@ -202,6 +238,9 @@ void utils::render(MachineData& machine)
 
     //draw all shapes created
     for(auto& s : machine.shapes_)
+        s.draw();
+
+    for (auto& s : machine.lines_)
         s.draw();
 
     //imgui endings
