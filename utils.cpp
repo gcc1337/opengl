@@ -82,26 +82,53 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 /******          BEGIN STATE MACHINE SETTINGS          ******/
 
 
+Shape desenharInsignia()
+{
+    std::vector<vec3> malta
+    {
+        //left
+        {-0.5f, 0.2f, 0}, //D
+        {0,0,0}, //A
+        {-0.3f, 0, 0}, //C
+        {-0.5f, -0.2f, 0}, //B
+        {0,0,0}, //A
+
+        //top
+        {0,0,0}, //A
+        {-0.2f, 0.5f, 0}, //B
+        {0.0f, 0.3f, 0}, //C
+        {0,0,0}, //A
+        {0.2f, 0.5f, 0}, //D
+        {0,0,0}, //A
+
+        //right
+        {0,0,0}, //A
+        {0.5f, 0.2f, 0}, //B
+        {0.3f, 0, 0}, //C
+        {0,0,0}, //A
+        {0.5f, -0.2f, 0}, //D
+        {0,0,0}, //A
+
+
+        //bottom
+        {0,0,0}, //A
+        {0.2f, -0.5f, 0}, //B
+        {0, -0.3, 0}, //C
+        {0,0,0}, //A
+        {-0.2f, -0.5f, 0}, //D
+        {0,0,0}, //A
+
+    };
+
+    return Shape{ malta,{ 1.0f, 1.0f,  1.0f } };
+}
+
 utils::MachineData::MachineData(GLFWwindow* window)
     :shapes_{}, clear_color_{ 0.2f, 0.3f, 0.3f }, window_{ window }
 {
     glClearColor(clear_color_.x, clear_color_.y, clear_color_.z, 1.0f);
 
-    std::vector<vec3> verticesTriangle_ = { {-1.0f , 0, 0.0f},
-                                            {0, 1.0f , 0.0f },
-                                            {1.0f , 0 , 0.0f } };
-    for (int i = 0; i < 5; i++)
-    {
-        shapes_.push_back({ verticesTriangle_, { i / 10.0f, i / 10.0f, i / 10.0f } });
-        
-    }
-
-    std::vector<vec3> points1{ {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} };
-    lines_.push_back({ points1, { 1.0f, 1.0f, 1.0f } });
-
-    std::vector<vec3> points2{ {0.0f, 1.0f, 0.0f}, {0.0f, -1.0f, 0.0f} };
-    lines_.push_back({ points2, { 1.0f, 1.0f, 1.0f } });
-
+    shapes_.push_back(desenharInsignia());
 }
 
 
@@ -130,7 +157,7 @@ void utils::handle_input(MachineData& m)
     static std::vector<vec3> aux_rgb(5);
 
     //gui creation
-    if (show_window) 
+    if (show_window)
     {
         ImGui::Begin("Retangulo", &show_window);
         for (int i = 0; i < 5; i++)
@@ -148,52 +175,25 @@ void utils::handle_input(MachineData& m)
         ImGui::ColorEdit3("Cor background", &m.clear_color_.x);
 
         ImGui::End();
-    } 
-
-    std::vector<ImVec2> textPos{
-        {0,300},
-        {180,300},
-        {500,300},
-        {500,600},
-        { 0,600 },
-    };
+    }
 
 
 
     if (ImGui::IsKeyPressed(ImGuiKey_Q))
         show_window = !show_window;
 
-    for (int i = 0; i < 5; i++)
-    {
-        m.shapes_[i].changeColor(aux_rgb[i]);
-        m.shapes_[i].changeSize(aux_width[i], aux_height[i]);
-        m.shapes_[i].changePosTriangle({ aux_x[i], aux_y[i], 0.0f });
-    }
-
-    for (int i = 0; i < 5; i++)
-    {
-        auto v{ m.shapes_[i].getVertices() };
-        ImGui::GetBackgroundDrawList()->AddText(
-            textPos[i],
-            IM_COL32(255, 255, 255, 255),
-            std::format("Retangulo {}:\n "
-                "V[{}]: {}, {}\n"
-                "V[{}]: {}, {}\n"
-                "V[{}]: {}, {}\n", i, 1, v[0].x, v[0].y, 2, v[1].x, v[1].y, 3, v[2].x, v[2].y
-                , i, aux_x[i], aux_y[i]).data()
-        );
-    }
-
 
     // input
     // -----
-    processInput(m.window_, m.clear_color_);
+    vec3 auxrgb;
+    processInput(m.window_, auxrgb);
+    m.shapes_[0].changeColor(auxrgb);
 }
 
 float randomFloat()
 {
     std::random_device rd;
-    std::mt19937 gen(rd());  
+    std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(1, 100);
 
     int random_num = dist(gen);
@@ -202,21 +202,17 @@ float randomFloat()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window, vec3& rgb_b)
+void processInput(GLFWwindow* window, vec3& rbg)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    static bool pressed{ false };
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !pressed)
+    if (glfwGetKey(window, GLFW_KEY_C))
     {
-        //rbg = vec3{ randomFloat(),randomFloat(),randomFloat() };
-        //rgb_b = vec3{ randomFloat(),randomFloat(),randomFloat() };
-        pressed = true ;
+        rbg = vec3{ randomFloat(),randomFloat(),randomFloat() };
     }
 
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
-        pressed = false;
+
 }
 
 
@@ -237,7 +233,7 @@ void utils::render(MachineData& machine)
     glClear(GL_COLOR_BUFFER_BIT);
 
     //draw all shapes created
-    for(auto& s : machine.shapes_)
+    for (auto& s : machine.shapes_)
         s.draw();
 
     for (auto& s : machine.lines_)
