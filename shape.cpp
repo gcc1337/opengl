@@ -2,8 +2,9 @@
 #include <iostream>
 
 Shape::Shape(std::vector<vec3> vertices, vec3 color)
-	:vertices_{vertices},
-	shader_{ "vertexShader.vs", "fragmentShader.fs" }
+	:vertices_{ vertices },
+	shader_{ "vertexShader.vs", "fragmentShader.fs" },
+	color_{color}
 {
 	//ineficient implementation to create vertices and colors intercalation
 	//operations and memory, this fuction uses a aux vector with length of vertices.size * colors
@@ -87,4 +88,25 @@ void Shape::changeVertex(int vertex_index, vec3 new_value, vec3 new_color)
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Shape::changeSize(float new_width, float new_height)
+{
+	changeVertex(0, { vertices_[0].x = -new_width, vertices_[0].y, 0 }, color_);
+	changeVertex(1, { 0, vertices_[1].y = new_height, 0 }, color_);
+	changeVertex(2, { vertices_[2].x = new_width, vertices_[2].y, 0 }, color_);
+}
+
+void Shape::changePosTriangle(vec3 pos) {
+	changeVertex(0, { vertices_[0].x + pos.x, vertices_[0].y + pos.y, 0 }, color_);
+	changeVertex(1, { vertices_[1].x + pos.x, vertices_[1].y + pos.y, 0 }, color_);
+	changeVertex(2, { vertices_[2].x + pos.x, vertices_[2].y + pos.y, 0 }, color_);
+}
+
+void Shape::changeColor(vec3 color)
+{
+	for (int i = 0; i < vertices_.size(); i++)
+		changeVertex(i, vertices_[i], color);
+
+	color_ = color;
 }

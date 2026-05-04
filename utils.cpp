@@ -82,38 +82,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 utils::MachineData::MachineData(GLFWwindow* window)
     :shapes_{}, clear_color_{ 0.2f, 0.3f, 0.3f }, window_{ window }
 {
-    //shader creation
-    float tx{ -0.2f };
-    float ty{ -0.2f };
-    //simple square
-    std::vector<vec3> vertices_ = {{-0.3f + 0.5f  , -0.3f + 0.5f, 0.0f},
-                                  {-0.3f + 0.5f ,  0.3f + 0.5f, 0.0f},
-                                  { 0.3f + 0.5f , -0.3f + 0.5f, 0.0f},
-                                  { 0.3f + 0.5f ,  0.3f + 0.5f, 0.0f} };
-
-    std::vector<vec3> verticesTriangle_ = { {-0.3f + tx  , -0.3f + ty, 0.0f},
-                              {-0.3f + tx ,  0.3f + ty, 0.0f},
-                              { 0.3f + tx ,  0.3f + ty, 0.0f} };
-
-
-    std::vector<vec3> vertices_pyramid{{-0.8f , -0.8f, 0.0f},
-                              {-0.8f ,  -0.6f, 0.0f},
-                              {-0.6f ,  -0.8f, 0.0f},
-                              {-0.6f ,  -0.6f, 0.0f},
-                              {-0.4f ,  -0.7f, 0.0f} };
-
-
-    shapes_.push_back({ vertices_, { 1.0f, 0.5f, 0.0f } });
-    shapes_.push_back({ verticesTriangle_, { 0.5f, 1.0f, 0.0f } });
-    shapes_.push_back({ vertices_pyramid, { 0.5f, 0.5f, 1.0f } });
-
-
-    //circle -> doesnt matter what are the initial values of a circle
-    //it only accepts its center position and radius
-    //will always be centralized, to change position and radius, use uniform query
-    shapes_.push_back({ {-0.700f, 0.645f, 0.0f}, 0.210f, { 0.5f, 1.0f, 1.0f } });
-
     glClearColor(clear_color_.x, clear_color_.y, clear_color_.z, 1.0f);
+
+    std::vector<vec3> verticesTriangle_ = { {-1.0f , 0, 0.0f},
+                                            {0, 1.0f , 0.0f },
+                                            {1.0f , 0 , 0.0f } };
+    for (int i = 0; i < 5; i++)
+    {
+        shapes_.push_back({ verticesTriangle_, { i / 10.0f, i / 10.0f, i / 10.0f } });
+    }
 }
 
 
@@ -124,7 +101,7 @@ utils::MachineData::MachineData(GLFWwindow* window)
 /******          BEGIN INPUT HANDLING           ******/
 
 
-void  processInput(GLFWwindow* window, vec3& rgb, vec3& rgb_b);
+void  processInput(GLFWwindow* window, vec3& rgb_b);
 
 void utils::handle_input(MachineData& m)
 {
@@ -135,18 +112,28 @@ void utils::handle_input(MachineData& m)
 
     //gui auxiliar variables
     static bool show_window{ false };
-    static float aux_width = 0.5f;
-    static float aux_height = 0.5f;
-    static vec3 aux_rgb = {};
-
+    static std::vector<float> aux_width(5, 0.1f);
+    static std::vector<float> aux_height(5, 0.190f);
+    static std::vector<float> aux_x{ -0.715f, -0.035f, 0.615f, 0.615f, -0.715f };
+    static std::vector<float> aux_y{ 0.635f, 0.635f, 0.635f, -0.550f, -0.550 };
+    static std::vector<vec3> aux_rgb(5);
 
     //gui creation
     if (show_window) 
     {
         ImGui::Begin("Retangulo", &show_window);
-        ImGui::DragFloat("Largura", &aux_width, 0.005f, 0.0f, 1.0f, "%.3f");
-        ImGui::DragFloat("Altura", &aux_height, 0.005f, 0.0f, 1.0f, "%.3f");
-        ImGui::ColorEdit3("Cor retangulo", &aux_rgb.x);
+        for (int i = 0; i < 5; i++)
+        {
+            ImGui::PushID(i);
+            ImGui::Text("Retangulo %i", i);
+            ImGui::DragFloat("Largura", &aux_width[i], 0.005f, 0.0f, 1.0f, "%.3f");
+            ImGui::DragFloat("Altura", &aux_height[i], 0.005f, 0.0f, 1.0f, "%.3f");
+            ImGui::DragFloat("X", &aux_x[i], 0.005f, -1.0f, 1.0f, "%.3f");
+            ImGui::DragFloat("Y", &aux_y[i], 0.005f, -1.0f, 1.0f, "%.3f");
+            ImGui::ColorEdit3("Cor retangulo", &aux_rgb[i].x);
+            ImGui::PopID();
+        }
+
         ImGui::ColorEdit3("Cor background", &m.clear_color_.x);
 
         ImGui::End();
@@ -155,16 +142,16 @@ void utils::handle_input(MachineData& m)
     if (ImGui::IsKeyPressed(ImGuiKey_Q))
         show_window = !show_window;
 
-    //change vector position and color
-    //m.shapes_[0].changeVertex(0, { -aux_width, -aux_height, 0 }, aux_rgb);
-    //m.shapes_[0].changeVertex(1, { -aux_width, aux_height, 0 }, aux_rgb);
-    //m.shapes_[0].changeVertex(2, { aux_width, -aux_height, 0 }, aux_rgb);
-    //m.shapes_[0].changeVertex(3, { aux_width, aux_height, 0 }, aux_rgb);
-
+    for (int i = 0; i < 5; i++)
+    {
+        m.shapes_[i].changeSize(aux_width[i], aux_height[i]);
+        m.shapes_[i].changeColor(aux_rgb[i]);
+        m.shapes_[i].changePosTriangle({ aux_x[i], aux_y[i], 0.0f });
+    }
 
     // input
     // -----
-    processInput(m.window_, aux_rgb, m.clear_color_);
+    processInput(m.window_, m.clear_color_);
 }
 
 float randomFloat()
@@ -179,7 +166,7 @@ float randomFloat()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window, vec3& rbg, vec3& rgb_b)
+void processInput(GLFWwindow* window, vec3& rgb_b)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -197,6 +184,7 @@ void processInput(GLFWwindow* window, vec3& rbg, vec3& rgb_b)
 }
 
 
+
 /******          END INPUT HANDLING           ******/
 
 
@@ -212,11 +200,10 @@ void utils::render(MachineData& machine)
     glClearColor(machine.clear_color_.x, machine.clear_color_.y, machine.clear_color_.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    machine.shapes_[0].draw();
-    machine.shapes_[1].draw();
-    machine.shapes_[2].draw();
-    machine.shapes_[3].draw();
-    
+    //draw all shapes created
+    for(auto& s : machine.shapes_)
+        s.draw();
+
     //imgui endings
     // Rendering
     // (Your code clears your framebuffer, renders your other stuff etc.)
