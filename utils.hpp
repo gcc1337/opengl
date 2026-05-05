@@ -16,8 +16,11 @@ namespace utils
 	{
 		MachineData(GLFWwindow* window);
 
+		bool light_{ false };
 		std::vector<Shape> shapes_{};
+		std::vector<Shape> shapesLight_{};
 		std::vector<Line> lines_{};
+		std::vector<Line> linesLight_{};
 		vec3 clear_color_{};
 
 		GLFWwindow* window_{};
@@ -27,5 +30,8 @@ namespace utils
 	void handle_input(MachineData& machine);
 
 	void render(MachineData& machine);
+
+	float randomFloat(int min, int max);
+
 
 }

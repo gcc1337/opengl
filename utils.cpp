@@ -81,54 +81,46 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 /******          BEGIN STATE MACHINE SETTINGS          ******/
 
-
-Shape desenharInsignia()
+void desenharEstrela(utils::MachineData& m)
 {
-    std::vector<vec3> malta
-    {
-        //left
-        {-0.5f, 0.2f, 0}, //D
-        {0,0,0}, //A
-        {-0.3f, 0, 0}, //C
-        {-0.5f, -0.2f, 0}, //B
-        {0,0,0}, //A
+    int minPos{ -100 };
+    int maxPos{ 100 };
+    int minRadius{ 1 };
+    int maxRadius{ 10 };
+    int minColor{ 0 };
+    int maxColor{ 100 };
 
-        //top
-        {0,0,0}, //A
-        {-0.2f, 0.5f, 0}, //B
-        {0.0f, 0.3f, 0}, //C
-        {0,0,0}, //A
-        {0.2f, 0.5f, 0}, //D
-        {0,0,0}, //A
-
-        //right
-        {0,0,0}, //A
-        {0.5f, 0.2f, 0}, //B
-        {0.3f, 0, 0}, //C
-        {0,0,0}, //A
-        {0.5f, -0.2f, 0}, //D
-        {0,0,0}, //A
-
-
-        //bottom
-        {0,0,0}, //A
-        {0.2f, -0.5f, 0}, //B
-        {0, -0.3, 0}, //C
-        {0,0,0}, //A
-        {-0.2f, -0.5f, 0}, //D
-        {0,0,0}, //A
-
-    };
-
-    return Shape{ malta,{ 1.0f, 1.0f,  1.0f } };
+    float posX{ utils::randomFloat(minPos, maxPos) };
+    float posY{ utils::randomFloat(minPos, maxPos) };
+    float radius{ utils::randomFloat(minRadius,maxRadius) };
+    float colorR{ utils::randomFloat(minColor, maxColor) };
+    float colorG{ utils::randomFloat(minColor, maxColor) };
+    float colorB{ utils::randomFloat(minColor, maxColor) };
+    m.shapes_.push_back({ { posX, posY, 0 }, radius, { colorR, colorG, colorB } });
+    m.shapesLight_.push_back({ { posX, posY, 0 }, radius, { 1.0f, 1.0f, 1.0f } });
+    m.lines_[0].addVertice({ posX, posY, 0 }, { colorR, colorG, colorB });
+    m.linesLight_[0].addVertice({ posX, posY, 0 }, { 1.0f, 1.0f, 1.0f });
 }
 
 utils::MachineData::MachineData(GLFWwindow* window)
-    :shapes_{}, clear_color_{ 0.2f, 0.3f, 0.3f }, window_{ window }
+    :shapes_{}, clear_color_{ 0.2f, 0.3f, 0.3f }, window_{ window }, lines_{}, linesLight_{}
 {
     glClearColor(clear_color_.x, clear_color_.y, clear_color_.z, 1.0f);
+    Line s{};
+    Line s1{};
+    lines_.push_back(s);
+    linesLight_.push_back(s1);
+    int minPos{ -100 };
+    int maxPos{ 100 };
+    int minRadius{ 1 };
+    int maxRadius{ 10 };
+    int minColor{ 0 };
+    int maxColor{ 100 };
 
-    shapes_.push_back(desenharInsignia());
+    for (int i = 0; i < 7; i++)
+    {
+        desenharEstrela(*this);
+    }
 }
 
 
@@ -139,7 +131,7 @@ utils::MachineData::MachineData(GLFWwindow* window)
 /******          BEGIN INPUT HANDLING           ******/
 
 
-void  processInput(GLFWwindow* window, vec3& rgb_b);
+void  processInput(GLFWwindow* window, utils::MachineData& m);
 
 void utils::handle_input(MachineData& m)
 {
@@ -185,16 +177,14 @@ void utils::handle_input(MachineData& m)
 
     // input
     // -----
-    vec3 auxrgb;
-    processInput(m.window_, auxrgb);
-    m.shapes_[0].changeColor(auxrgb);
+    processInput(m.window_, m);
 }
 
-float randomFloat()
+float utils::randomFloat(int min, int max)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(1, 100);
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(min, max);
 
     int random_num = dist(gen);
     return (float)(random_num) / 100;
@@ -202,19 +192,65 @@ float randomFloat()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window, vec3& rbg)
+void processInput(GLFWwindow* window, utils::MachineData& m )
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_C))
+    static bool holdN{};
+
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && !holdN)
     {
-        rbg = vec3{ randomFloat(),randomFloat(),randomFloat() };
+        desenharEstrela(m);
+        holdN = true;
     }
 
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_RELEASE)
+        holdN = false;
+
+
+    static bool holdT{};
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && !holdT)
+    {
+        m.light_ = !m.light_;
+        holdT = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE)
+        holdT = false;
+
+    static bool holdX{};
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && !holdX)
+    {
+        if (m.shapes_.size() > 0)
+        {
+            m.shapes_.erase(--m.shapes_.end());
+            m.shapesLight_.erase(--m.shapesLight_.end());
+            m.linesLight_[0].removeVertice(m.linesLight_[0].getVertices().size()-1);
+            m.lines_[0].removeVertice(m.lines_[0].getVertices().size()-1);
+        }
+        holdX = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_RELEASE)
+        holdX = false;
+
+
+    static bool holdR{};
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && !holdR)
+    {
+        m.shapes_.clear();
+        m.shapesLight_.clear();
+        m.linesLight_[0].clear();
+        m.lines_[0].clear();
+
+        holdR = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_RELEASE)
+        holdR = false;
 
 }
-
 
 
 /******          END INPUT HANDLING           ******/
@@ -229,15 +265,30 @@ void utils::render(MachineData& machine)
     // render   
     // ------
 
-    glClearColor(machine.clear_color_.x, machine.clear_color_.y, machine.clear_color_.z, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
 
     //draw all shapes created
-    for (auto& s : machine.shapes_)
-        s.draw();
+    if (machine.light_) {
+        glClearColor(0, 0, 0, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    for (auto& s : machine.lines_)
-        s.draw();
+
+        for (auto& s : machine.shapesLight_)
+            s.draw();
+
+        for (auto& s : machine.linesLight_)
+            s.draw();
+    }
+    else {
+        glClearColor(machine.clear_color_.x, machine.clear_color_.y, machine.clear_color_.z, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        for (auto& s : machine.shapes_)
+            s.draw();
+
+        for (auto& s : machine.lines_)
+            s.draw();
+    }
+
 
     //imgui endings
     // Rendering
