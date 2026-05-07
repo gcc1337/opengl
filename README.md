@@ -1,0 +1,2 @@
+<img width="1920" height="1080" alt="2026-05-07 18-57-19" src="https://github.com/user-attachments/assets/ad8de68e-37d7-44f1-ad95-9c79c05fdb20" />
+essa questao pede para desenhar retangulos, no opengl moderno desenhar um retangulo literalmente é inviável, ja que o modo GL_QUADS foi completamente removido, o metodo utilizado para desenhar retangulos é desenhar 2 triangulos, foi feito na missao 1, ainda sim a missao esta incompleta, nao foi utilizado retangulo
