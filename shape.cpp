@@ -73,7 +73,7 @@ void Shape::draw()
 {
 	shader_.use();
 	glBindVertexArray(vaoID_);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//vertices has to form a "zig-zag" pattern
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices_.size());
 }
