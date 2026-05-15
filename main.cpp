@@ -143,23 +143,23 @@ void draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // desenhando o plano cartesiano 3D
-    glBegin(GL_LINES);
-    // eixo X
-    glColor3f(0.0, 0.0, 0.0);
-    glVertex3f(-2.0, 0.0, 0.0);
-    glColor3f(1.0, 0.0, 0.0);
-    glVertex3f(2.0, 0.0, 0.0);
-    // eixo Y
-    glColor3f(0.0, 0.0, 0.0);
-    glVertex3f(0.0, -2.0, 0.0);
-    glColor3f(0.0, 1.0, 0.0);
-    glVertex3f(0.0, 2.0, 0.0);
-    // eixo Z
-    glColor3f(0.0, 0.0, 0.0);
-    glVertex3f(0.0, 0.0, -2.0);
-    glColor3f(0.0, 0.0, 1.0);
-    glVertex3f(0.0, 0.0, 2.0);
-    glEnd();
+    //glBegin(GL_LINES);
+    //// eixo X
+    //glColor3f(0.0, 0.0, 0.0);
+    //glVertex3f(-2.0, 0.0, 0.0);
+    //glColor3f(1.0, 0.0, 0.0);
+    //glVertex3f(2.0, 0.0, 0.0);
+    //// eixo Y
+    //glColor3f(0.0, 0.0, 0.0);
+    //glVertex3f(0.0, -2.0, 0.0);
+    //glColor3f(0.0, 1.0, 0.0);
+    //glVertex3f(0.0, 2.0, 0.0);
+    //// eixo Z
+    //glColor3f(0.0, 0.0, 0.0);
+    //glVertex3f(0.0, 0.0, -2.0);
+    //glColor3f(0.0, 0.0, 1.0);
+    //glVertex3f(0.0, 0.0, 2.0);
+    //glEnd();
 
     glLoadIdentity();
     confCamera();
@@ -186,7 +186,7 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     // configurando e exibindo uma janela
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
-    glutCreateWindow("missao 2");
+    glutCreateWindow("missao 3");
 
     // registrando função de callback
     glutDisplayFunc(draw);
