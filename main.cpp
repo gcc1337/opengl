@@ -1,14 +1,15 @@
 // arquivos de cabeçalho
 #include <GL/freeglut.h>
 #include <iostream>
+#include <vector>
 
 // guardará a razão atual da largura e altura da janela
 float aspecto = 1.0;
 
 // guarda a posição atual da camera
-float CamX = 1.0;
-float CamY = 1.0;
-float CamZ = 1.0;
+float CamX = 2.0;
+float CamY = 2.0;
+float CamZ = 2.0;
 
 float deltaTime{};
 float lastFrame{};
@@ -43,33 +44,100 @@ void keyboard(unsigned char key, int posX, int posY)
     case 27:
         exit(0);
         break;
-    case 'q':
+    case '1':
         CamX = 0.0;
         CamY = 0.0;
-        CamZ = 1.0;
-        glClearColor(1.0, 0.0, 0.0, 0.0);
+        CamZ = 2.0;
+        //glClearColor(1.0, 0.0, 0.0, 0.0);
         break;
-    case 'w':
-        CamX = 1.0;
+    case '2':
+        CamX = 2.0;
         CamY = 0.0;
         CamZ = 0.0;
-        glClearColor(0.0, 1.0, 0.0, 0.0);
-        glClearColor(0.0, 1.0, 0.0, 0.0);
+        //glClearColor(0.0, 1.0, 0.0, 0.0);
         break;
-
-    case 'e':
-        CamX = 0.0;
+            
+    case '3':
+        CamX = 2.0;
         CamY = 2.0;
-        CamZ = 0.001;
-        glClearColor(0.0, 0.0, 1.0, 0.0);
+        CamZ = 2.0;
+        //glClearColor(0.0, 0.0, 1.0, 0.0);
         break;
 
+    case 'w':
+        CamZ += 0.1;
+        //glClearColor(1.0, 0.0, 0.0, 0.0);
+        break;
+    case 'a':
+        CamX -= 0.1;
+        //glClearColor(0.0, 1.0, 0.0, 0.0);
+        break;
+
+    case 's':
+        CamZ -= 0.1;
+        //glClearColor(0.0, 0.0, 1.0, 0.0);
+        break;
+    case 'd':
+        CamX += 0.1;
+        //glClearColor(0.0, 0.0, 1.0, 0.0);
+        break;
     } 
     // repinta a tela
     glutPostRedisplay();
 }
 
 
+void retangle()
+{
+    std::vector<std::vector<float>> pos{
+        //atras
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 0.5f, 0.0f},
+        {0.0f, 0.5f, 0.0f},
+
+        //frente
+        {0.0f, 0.0f, 1.0f},
+        {1.0f, 0.0f, 1.0f},
+        {1.0f, 0.5f, 1.0f},
+        {0.0f, 0.5f, 1.0f},
+
+        //esquerda
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.5f, 0.0f},
+        {0.0f, 0.5f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+
+        //direita
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 0.5f, 0.0f},
+        {1.0f, 0.5f, 1.0f},
+        {1.0f, 0.0f, 1.0f},
+
+
+        //baixo
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        
+        //cima
+        {0.0f, 0.5f, 0.0f},
+        {1.0f, 0.5f, 0.0f},
+        {1.0f, 0.5f, 1.0f},
+        {0.0f, 0.5f, 1.0f}
+    };
+
+    float cor[] = { 0.3, 0.6, 0.8 };
+
+    glBegin(GL_QUADS);
+        for (int i = 0; i < pos.size(); i++)
+        {
+            glVertex3d(pos[i][0] - 0.5f, pos[i][1] - 0.25f, pos[i][2] - 0.5f);
+            glColor3f(cor[0]+ i * 0.01f, cor[1]+ i * 0.02f, cor[2]+ i * 0.03f);
+        }
+    glEnd();
+}
 
 // função de desenho
 void draw()
@@ -103,7 +171,8 @@ void draw()
     confCamera();
 
     glColor3f(1.0, 1.0, 1.0);
-    glutWireCone(0.5, 0.5, 10, 10);
+    //glutWireCone(0.5, 0.5, 10, 10);
+    retangle();
 
     glFlush();
 }
@@ -123,7 +192,7 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     // configurando e exibindo uma janela
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
-    glutCreateWindow("Exemplo 06: objetos GLUT");
+    glutCreateWindow("missao 2");
 
     // registrando função de callback
     glutDisplayFunc(draw);
