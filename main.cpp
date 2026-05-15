@@ -123,7 +123,7 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     // configurando e exibindo uma janela
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
-    glutCreateWindow("Exemplo 06: objetos GLUT");
+    glutCreateWindow("missao 1");
 
     // registrando função de callback
     glutDisplayFunc(draw);
