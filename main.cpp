@@ -47,7 +47,7 @@ void keyboard(unsigned char key, int posX, int posY)
     case '1':
         CamX = 0.0;
         CamY = 0.0;
-        CamZ = 2.0;
+        CamZ = 4.0;
         //glClearColor(1.0, 0.0, 0.0, 0.0);
         break;
     case '2':
@@ -72,7 +72,6 @@ void keyboard(unsigned char key, int posX, int posY)
         CamX -= 0.1;
         //glClearColor(0.0, 1.0, 0.0, 0.0);
         break;
-
     case 's':
         CamZ -= 0.1;
         //glClearColor(0.0, 0.0, 1.0, 0.0);
@@ -86,8 +85,18 @@ void keyboard(unsigned char key, int posX, int posY)
     glutPostRedisplay();
 }
 
+void drawShape(const std::vector<std::vector<float>>& points, const std::vector<std::vector<float>>& colors, GLenum mode)
+{
+    glBegin(mode);
+    for (int i = 0; i < points.size(); i++)
+    {
+        glVertex3d(points[i][0], points[i][1], points[i][2]);
+        glColor3f(colors[i][0], colors[i][1], colors[i][2]);
+    }
+    glEnd();
+}
 
-void retangle()
+void hourglass()
 {
     std::vector<float> A{ -1.0f, 0.0f, 0.0f };
     std::vector<float> B{ 0.0f, 1.0f, 0.0f };
@@ -96,6 +105,13 @@ void retangle()
     std::vector<float> E{ -0.5f, -1.0f, 0.0f };
     std::vector<float> picoPiramide{ 0.0f, 0.0f, 1.0f };
 
+    std::vector<float> red{ 1.0f, 0.0f, 0.0f };
+    std::vector<float> green{ 0.0f, 1.0f, 0.0f };
+    std::vector<float> blue{ 0.0f, 0.0f, 1.0f };
+    std::vector<float> yellow{ 1.0f, 1.0f, 0.0f };
+    std::vector<float> cian{ 0.0f, 1.0f, 1.0f };
+    std::vector<float> pink{ 1.0f, 0.0f, 1.0f };
+
     std::vector<std::vector<float>> posBase{
         A,
         B,
@@ -103,34 +119,71 @@ void retangle()
         D,
         E
     };
+
+    std::vector<std::vector<float>> colorBase{
+        red,
+        green,
+        blue,
+        yellow,
+        cian,
+    };
     
-    std::vector<std::vector<std::vector<float>>> triangles{
+    std::vector<std::vector<std::vector<float>>> triangles1{
         {{A, B, picoPiramide},
          {B, C, picoPiramide},
          {C, D, picoPiramide},
          {D, E, picoPiramide},
          {E, A, picoPiramide}}
     };
-
-    float cor[] = { 0.3, 0.6, 0.8 };
-
-
-    glBegin(GL_POLYGON);
-        for (int i = 0; i < posBase.size(); i++)
-        {
-            glVertex3d(posBase[i][0], posBase[i][1], posBase[i][2]);
-            glColor3f(cor[0]+ i * 0.01f, cor[1]+ i * 0.02f, cor[2]+ i * 0.03f);
+    for (auto& tri : triangles1)
+        for (auto& pos : tri) {
+            pos[2] -= 1;
         }
-    glEnd();
 
-    glBegin(GL_TRIANGLES);
-    for (auto& tri : triangles)
+    std::vector<float> picoPiramideInvertida{ 0.0f, 0.0f, -1.0f };
+    std::vector<std::vector<std::vector<float>>> triangles2{
+        {{A, B, picoPiramideInvertida},
+         {B, C, picoPiramideInvertida},
+         {C, D, picoPiramideInvertida},
+         {D, E, picoPiramideInvertida},
+         {E, A, picoPiramideInvertida}}
+    };
+    for (auto& tri : triangles2)
+        for (auto& pos : tri) {
+            pos[2] += 1;
+        }
+
+    std::vector<std::vector<std::vector<float>>> colorTriangles{
+        {{red, pink, green},
+         {green, pink, blue},
+         {blue, pink, yellow},
+         {yellow, pink, cian},
+         {cian, pink, red}}
+    };
+
+    auto posBase1 = posBase;
+    for (auto& vec : posBase1)
+        vec[2] = -1;
+
+    auto posBase2 = posBase;
+    for (auto& vec : posBase2)
+        vec[2] = 1;
+
+
+    drawShape(posBase1, colorBase, GL_POLYGON);
+
+    for (int i = 0; i < triangles1.size(); i++)
     {
-        for(auto& vec: tri)
-            glVertex3d(vec[0], vec[1], vec[2]);
-            glColor3f(cor[0] += 0.1, cor[1] += 0.2, cor[2] += 0.3);
+        drawShape(triangles1[i], colorTriangles[i], GL_TRIANGLES);
     }
-    glEnd();
+
+    drawShape(posBase2, colorBase, GL_POLYGON);
+
+    for (int i = 0; i < triangles2.size(); i++)
+    {
+        drawShape(triangles2[i], colorTriangles[i], GL_TRIANGLES);
+    }
+
 }
 
 // função de desenho
@@ -166,7 +219,7 @@ void draw()
 
     glColor3f(1.0, 1.0, 1.0);
     //glutWireCone(0.5, 0.5, 10, 10);
-    retangle();
+    hourglass();
 
     glFlush();
 }
