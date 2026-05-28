@@ -1,45 +1,142 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
+// arquivos de cabeçalho
+#include <GL/freeglut.h>
 #include <iostream>
-#include <vector>
 
-#include "shader.hpp"
-#include "shape.hpp"
-#include "utils.hpp"
+// guardará a razão atual da largura e altura da janela
+float aspecto = 1.0;
 
-int main()
-{
-    auto window = utils::configure("Gustavo Carvalho cunha", 1280, 720);
-    if (window == nullptr) {
-        std::cout << "Window creation failed!\n";
-        return -1;
-    }
+// guarda a posição atual da camera
+float CamX = 1.0;
+float CamY = 1.0;
+float CamZ = 1.0;
+
+float deltaTime{};
+float lastFrame{};
     
-    utils::MachineData machine{ window };
+// configura o campo de visualização
+void confCamera()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, aspecto, 0.1, 100);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(CamX, CamY, CamZ, 0, 0, 0, 0, 1, 0);
+}
 
-    // render loop
-    // -----------
-    while (!glfwWindowShouldClose(window))
-    {
-        utils::handle_input(machine);
-        utils::render(machine);
+// funçao para quando houver redimensionamento da janela
+void resize(int width, int height)
+{
+    if (height == 0)
+        height = 1;
+    aspecto = (float)width / height;
+    glViewport(0, 0, width, height);
+    //confCamera();
+}
+
+// função responsável por eventos de teclado
+void keyboard(unsigned char key, int posX, int posY)
+{
+    switch (key) {
+        // saindo do programa
+    case 27:
+        exit(0);
+        break;
+    case 'w':
+        glTranslatef(0.0, 0.01, 0.0);
+        break;
+    case 'a':
+        glTranslatef(-0.01, 0.0, 0.0);
+        break;
+
+    case 's':
+        glTranslatef(0.0, -0.01, 0.0);
+        break;
+
+    case 'd':
+        glTranslatef(0.01, 0.0, 0.0);
+        break;
     }
+    // repinta a tela
+    glutPostRedisplay();
+}
 
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // --------------------------- ---------------------------------------------
-    //glDeleteVertexArrays(1, VAO.data());
-    //glDeleteBuffers(1, VBO.data());
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
-    glfwTerminate();
+
+// função de desenho
+void draw()
+{
+    float currentFrame{ (float)glutGet(GLUT_ELAPSED_TIME) };
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //// desenhando o plano cartesiano 3D
+    //glBegin(GL_LINES);
+    //// eixo X
+    //glColor3f(0.0, 0.0, 0.0);
+    //glVertex3f(-2.0, 0.0, 0.0);
+    //glColor3f(1.0, 0.0, 0.0);
+    //glVertex3f(2.0, 0.0, 0.0);
+    //// eixo Y
+    //glColor3f(0.0, 0.0, 0.0);
+    //glVertex3f(0.0, -2.0, 0.0);
+    //glColor3f(0.0, 1.0, 0.0);
+    //glVertex3f(0.0, 2.0, 0.0);
+    //// eixo Z
+    //glColor3f(0.0, 0.0, 0.0);
+    //glVertex3f(0.0, 0.0, -2.0);
+    //glColor3f(0.0, 0.0, 1.0);
+    //glVertex3f(0.0, 0.0, 2.0);
+    //glEnd();
+
+    //glLoadIdentity();
+    //confCamera();
+
+    glBegin(GL_TRIANGLES);
+        glColor3f(1.0f, 0.0f, 0.0f); // vermelho
+        glVertex2f(-0.5f, -0.5f);
+
+        glColor3f(0.0f, 1.0f, 0.0f); // verde
+        glVertex2f(0.5f, -0.5f);
+
+        glColor3f(0.0f, 0.0f, 1.0f); // azul
+        glVertex2f(0.0f, 0.5f);
+    glEnd();
+
+    
+
+    glFlush();
+}
+
+
+// função para inicializar as variaveis de estado
+void init()
+{
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    //confCamera();
+    glEnable(GL_DEPTH_TEST);
+}
+
+// função principal
+int main(int argc, char** argv)
+{
+    glutInit(&argc, argv);
+    // configurando e exibindo uma janela
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
+    glutCreateWindow("missao 1");
+
+    // registrando função de callback
+    glutDisplayFunc(draw);
+    glutReshapeFunc(resize);
+    glutKeyboardFunc(keyboard);
+
+    // inicialização das variáveis de estado
+    init();
+
+    // loop de tratamento de eventos
+    glutMainLoop();
+
     return 0;
 }
