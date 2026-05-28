@@ -43,25 +43,28 @@ void keyboard(unsigned char key, int posX, int posY)
     case 27:
         exit(0);
         break;
-    case 'q':
-        CamX = 0.0;
-        CamY = 0.0;
-        CamZ = 1.0;
-        glClearColor(1.0, 0.0, 0.0, 0.0);
-        break;
-    case 'w':
-        CamX = 1.0;
-        CamY = 0.0;
-        CamZ = 0.0;
-        glClearColor(0.0, 1.0, 0.0, 0.0);
-        glClearColor(0.0, 1.0, 0.0, 0.0);
+    case 'x':
+        glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
         break;
 
-    case 'e':
-        CamX = 0.0;
-        CamY = 2.0;
-        CamZ = 0.001;
-        glClearColor(0.0, 0.0, 1.0, 0.0);
+    case 'X':
+        glRotatef(-5.0f, 1.0f, 0.0f, 0.0f);
+        break;
+
+    case 'y':
+        glRotatef(5.0f, 0.0f, 1.0f, 0.0f);
+        break;
+
+    case 'Y':
+        glRotatef(-5.0f, 0.0f, 1.0f, 1.0f);
+        break;
+
+    case 'z':
+        glRotatef(5.0f, 0.0f, 0.0f, 1.0f);
+        break;
+
+    case 'Z':
+        glRotatef(-5.0f, 0.0f, 0.0f, 1.0f);
         break;
 
     } 
@@ -80,27 +83,27 @@ void draw()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //// desenhando o plano cartesiano 3D
-    //glBegin(GL_LINES);
-    //// eixo X
-    //glColor3f(0.0, 0.0, 0.0);
-    //glVertex3f(-2.0, 0.0, 0.0);
-    //glColor3f(1.0, 0.0, 0.0);
-    //glVertex3f(2.0, 0.0, 0.0);
-    //// eixo Y
-    //glColor3f(0.0, 0.0, 0.0);
-    //glVertex3f(0.0, -2.0, 0.0);
-    //glColor3f(0.0, 1.0, 0.0);
-    //glVertex3f(0.0, 2.0, 0.0);
-    //// eixo Z
-    //glColor3f(0.0, 0.0, 0.0);
-    //glVertex3f(0.0, 0.0, -2.0);
-    //glColor3f(0.0, 0.0, 1.0);
-    //glVertex3f(0.0, 0.0, 2.0);
-    //glEnd();
+    // desenhando o plano cartesiano 3D
+    glBegin(GL_LINES);
+    // eixo X
+    glColor3f(0.0, 0.0, 0.0);
+    glVertex3f(-2.0, 0.0, 0.0);
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex3f(2.0, 0.0, 0.0);
+    // eixo Y
+    glColor3f(0.0, 0.0, 0.0);
+    glVertex3f(0.0, -2.0, 0.0);
+    glColor3f(0.0, 1.0, 0.0);
+    glVertex3f(0.0, 2.0, 0.0);
+    // eixo Z
+    glColor3f(0.0, 0.0, 0.0);
+    glVertex3f(0.0, 0.0, -2.0);
+    glColor3f(0.0, 0.0, 1.0);
+    glVertex3f(0.0, 0.0, 2.0);
+    glEnd();
 
-    glLoadIdentity();
-    confCamera();
+    //glLoadIdentity();
+    //confCamera();
 
     glColor3f(1.0, 1.0, 1.0);
     glutWireCone(0.5, 0.5, 10, 10);
