@@ -12,6 +12,10 @@ float CamZ = 1.0;
 
 float deltaTime{};
 float lastFrame{};
+
+//scaling
+int selected{};
+float scale[]{ 1.0, 1.0, 1.0f };
     
 // configura o campo de visualização
 void confCamera()
@@ -42,19 +46,20 @@ void keyboard(unsigned char key, int posX, int posY)
     case 27:
         exit(0);
         break;
-    case 'w':
-        glTranslatef(0.0, 0.01, 0.0);
+    case '1':
+        selected = 0;
         break;
-    case 'a':
-        glTranslatef(-0.01, 0.0, 0.0);
+    case '2':
+        selected = 1;
         break;
-
-    case 's':
-        glTranslatef(0.0, -0.01, 0.0);
+    case '3':
+        selected = 2;
         break;
-
-    case 'd':
-        glTranslatef(0.01, 0.0, 0.0);
+    case 'x':
+        scale[selected] -= 0.5;
+        break;
+    case 'X':
+        scale[selected] += 0.5;
         break;
     }
     // repinta a tela
@@ -93,19 +98,54 @@ void draw()
 
     //glLoadIdentity();
     //confCamera();
+    
+
+    // TRIÂNGULO 
+    glScalef(scale[0], scale[0], scale[0]);
 
     glBegin(GL_TRIANGLES);
-        glColor3f(1.0f, 0.0f, 0.0f); // vermelho
-        glVertex2f(-0.5f, -0.5f);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex2f(-0.2f, -0.5f);
 
-        glColor3f(0.0f, 1.0f, 0.0f); // verde
-        glVertex2f(0.5f, -0.5f);
-
-        glColor3f(0.0f, 0.0f, 1.0f); // azul
-        glVertex2f(0.0f, 0.5f);
-    glEnd();
-
+        glColor3f(1.0f, 0.0f, 0.0f); 
+        glVertex2f(0.2f, -0.5f);
     
+        glColor3f(1.0f, 0.0f, 0.0f); 
+        glVertex2f(0.0f, 0.2f);
+    glEnd();
+    
+    glLoadIdentity();
+
+    // QUADRADO 
+    glTranslatef(0.5f, -0.2f, 0.0f); 
+    glScalef(scale[1], scale[1], scale[1]);
+    glTranslatef(-0.5f, 0.2f, 0.0f);
+
+    glBegin(GL_QUADS);
+        glColor3f(1.0f, 1.0f, 0.0f); 
+
+        glVertex2f(0.4f, -0.4f);
+        glVertex2f(0.8f, -0.4f);
+        glVertex2f(0.8f, 0.0f);
+        glVertex2f(0.4f, 0.0f);
+    glEnd();
+    glLoadIdentity();
+
+    // PENTÁGONO
+    glTranslatef(-0.6f, -0.2f, 0.0f); 
+    glScalef(scale[2], scale[2], scale[2]);
+    glTranslatef(0.6f, 0.2f, 0.0f);
+
+    glBegin(GL_POLYGON);
+        glColor3f(1.0f, 0.0f, 1.0f); 
+
+        glVertex2f(-0.8f, -0.2f);
+        glVertex2f(-0.6f, -0.5f);
+        glVertex2f(-0.4f, -0.2f);
+        glVertex2f(-0.45f, 0.1f);
+        glVertex2f(-0.75f, 0.1f);
+    glEnd();
+    glLoadIdentity();
 
     glFlush();
 }
