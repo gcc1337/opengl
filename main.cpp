@@ -33,7 +33,7 @@ void resize(int width, int height)
         height = 1;
     aspecto = (float)width / height;
     glViewport(0, 0, width, height);
-    confCamera();
+    //confCamera();
 }
 
 // função responsável por eventos de teclado
@@ -44,43 +44,30 @@ void keyboard(unsigned char key, int posX, int posY)
     case 27:
         exit(0);
         break;
-    case '1':
-        CamX = 0.0;
-        CamY = 0.0;
-        CamZ = 4.0;
-        //glClearColor(1.0, 0.0, 0.0, 0.0);
-        break;
-    case '2':
-        CamX = 2.0;
-        CamY = 0.0;
-        CamZ = 0.0;
-        //glClearColor(0.0, 1.0, 0.0, 0.0);
-        break;
-            
-    case '3':
-        CamX = 2.0;
-        CamY = 2.0;
-        CamZ = 2.0;
-        //glClearColor(0.0, 0.0, 1.0, 0.0);
+    case 't':
+        glTranslatef(1.0f, 0.0f, 0.0f);
         break;
 
-    case 'w':
-        CamZ += 0.1;
-        //glClearColor(1.0, 0.0, 0.0, 0.0);
+    case 'T':
+        glTranslatef(-1.0f, 0.0f, 0.0f);
         break;
-    case 'a':
-        CamX -= 0.1;
-        //glClearColor(0.0, 1.0, 0.0, 0.0);
+
+    case 'y':
+        glRotatef(5.0f, 0.0f, 1.0f, 0.0f);
         break;
-    case 's':
-        CamZ -= 0.1;
-        //glClearColor(0.0, 0.0, 1.0, 0.0);
+
+    case 'Y':
+        glRotatef(-5.0f, 0.0f, 1.0f, 1.0f);
         break;
-    case 'd':
-        CamX += 0.1;
-        //glClearColor(0.0, 0.0, 1.0, 0.0);
+
+    case 'e':
+        glScalef(1.0f, 1.0f, 1.5f);
         break;
-    } 
+
+    case 'E':
+        glScalef(1.0f, 1.0f, 0.5f);
+        break;
+    }
     // repinta a tela
     glutPostRedisplay();
 }
@@ -127,7 +114,7 @@ void hourglass()
         yellow,
         cian,
     };
-    
+
     std::vector<std::vector<std::vector<float>>> triangles1{
         {{A, B, picoPiramide},
          {B, C, picoPiramide},
@@ -214,8 +201,8 @@ void draw()
     glVertex3f(0.0, 0.0, 2.0);
     glEnd();
 
-    glLoadIdentity();
-    confCamera();
+    //glLoadIdentity();
+    //confCamera();
 
     glColor3f(1.0, 1.0, 1.0);
     //glutWireCone(0.5, 0.5, 10, 10);
